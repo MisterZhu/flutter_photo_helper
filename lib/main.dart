@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +59,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _batteryLevel = 'Unknown battery level.';
+  static const platform = MethodChannel('samples.flutter.dev/battery');
+  static const platform1 = MethodChannel('plugin_apple');
 
   void _incrementCounter() {
     setState(() {
@@ -65,6 +71,40 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+    });
+  }
+
+  Future<void> appleOne() async {
+    const imagePath = 'http:www.badu.jpg';
+    final result = await platform1
+        .invokeMethod('sendImageToNative', {'imagePath': imagePath});
+    Map map = result as LinkedHashMap<Object?, Object?>;
+    print("result: ${map["result"]}");
+    print("code: ${map["code"]}");
+    print("map: ${map}");
+  }
+
+  Future<void> appleTwo() async {
+    const imagePath = 'http:www.badu.jpg1111111';
+
+    final result = await platform1
+        .invokeMethod('sendImageDataToNative', {'imagePath': imagePath});
+    Map map = result as LinkedHashMap<Object?, Object?>;
+    print("result: ${map["result"]}");
+    print("code: ${map["code"]}");
+  }
+
+  Future<void> _getBatteryLevel() async {
+    String batteryLevel;
+    try {
+      final int result = await platform.invokeMethod('getBatteryLevel');
+      batteryLevel = 'Battery level at $result % .';
+    } on PlatformException catch (e) {
+      batteryLevel = "Failed to get battery level: '${e.message}'.";
+    }
+
+    setState(() {
+      _batteryLevel = batteryLevel;
     });
   }
 
@@ -112,6 +152,22 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            GestureDetector(
+                onTap: () {
+                  appleOne();
+                },
+                child: const Text('调用方法 appleOne')),
+            const SizedBox(height: 50),
+            GestureDetector(
+                onTap: () {
+                  appleTwo();
+                },
+                child: const Text('调用方法 appleTwo')),
+            ElevatedButton(
+              onPressed: _getBatteryLevel,
+              child: const Text('Get Battery Level'),
+            ),
+            Text(_batteryLevel),
           ],
         ),
       ),
