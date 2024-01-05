@@ -31,11 +31,23 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-
+  #getX框架 https://pub.dev/packages/get/install
+  get: ^4.6.6
+  #获取手机各种权限 https://pub.flutter-io.cn/packages/permission_handler/install
+  permission_handler: ^11.0.0
+  #照片选择器 https://pub.dev/packages/image_picker/install
+  image_picker: ^1.0.2
+  #生成图片保存 https://pub.dev/packages/image_gallery_saver/install
+  image_gallery_saver: ^2.0.3
+  #获取文件路径 https://pub.dev/packages/path_provider/install
+  path_provider: ^2.1.1
+  #获取截屏 https://pub.dev/packages/flutter_screenshot_callback/install
+  flutter_screenshot_callback: ^0.0.9
+  #loading动画库 https://pub.dev/packages/flutter_spinkit/install
+  flutter_spinkit: ^5.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
