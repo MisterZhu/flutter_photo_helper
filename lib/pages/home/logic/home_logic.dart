@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 class HomeLogic extends GetxController {
   late final ImagePicker _picker = ImagePicker();
   String imageFilePath = '';
+  int imageState = 0;
   static const platform = MethodChannel('samples.flutter.dev/battery');
   static const platform1 = MethodChannel('plugin_apple');
   // RxInt counter = 0.obs;
@@ -103,10 +104,17 @@ class HomeLogic extends GetxController {
       // 使用选择的图片
       debugPrint('选择的图片路径：${image.path}');
       imageFilePath = image.path;
+      imageState = 1;
+      // appleOne();
+      _getBatteryLevel();
       // update([TBDefVal.kChatInputFile]);
     } else {
+      imageState = 0;
+
       debugPrint('没有选择图片。');
     }
+    update();
+
   }
 
   ///拍照
@@ -118,10 +126,18 @@ class HomeLogic extends GetxController {
       // 使用拍摄的照片
       debugPrint('拍摄的照片路径：${photo.path}');
       imageFilePath = photo.path;
+      imageState = 1;
+      // appleOne();
+      _getBatteryLevel();
+
       // update([TBDefVal.kChatInputFile]);
     } else {
+      imageState = 0;
+
       debugPrint('没有拍摄照片。');
     }
+    update();
+
   }
 
   Future<void> appleOne() async {
@@ -149,5 +165,6 @@ class HomeLogic extends GetxController {
     } on PlatformException catch (e) {
       batteryLevel = "Failed to get battery level: '${e.message}'.";
     }
+    debugPrint("map: $batteryLevel");
   }
 }

@@ -6,6 +6,7 @@ PODS:
     - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
+  - MLImageSegmentationLibrary (2.0.4.300)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -17,8 +18,13 @@ DEPENDENCIES:
   - flutter_screenshot_callback (from `.symlinks/plugins/flutter_screenshot_callback/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - MLImageSegmentationLibrary (~> 2.0.4.300)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+
+SPEC REPOS:
+  trunk:
+    - MLImageSegmentationLibrary
 
 EXTERNAL SOURCES:
   Flutter:
@@ -39,9 +45,10 @@ SPEC CHECKSUMS:
   flutter_screenshot_callback: b3814cf40474a13a9c0d567e152740b6c9139bac
   image_gallery_saver: cb43cc43141711190510e92c460eb1655cd343cb
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
+  MLImageSegmentationLibrary: 2ad2730b4e33866796c2f0609999f4438b2249bb
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
 
-PODFILE CHECKSUM: bf0fb5ccdc09c645c26be9b0b881939df96c37c2
+PODFILE CHECKSUM: dfd552e484451ae371b42a21a8d1d10150ee69a4
 
 COCOAPODS: 1.12.1
