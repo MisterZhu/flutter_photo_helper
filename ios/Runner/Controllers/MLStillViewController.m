@@ -36,7 +36,6 @@ static NSString * const kProcessCollectionName = @"imgseg_process";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.analyzer = [MLImageSegmentationAnalyzer sharedInstance];
     
 }
 
@@ -64,21 +63,72 @@ static NSString * const kProcessCollectionName = @"imgseg_process";
 #pragma mark - action
 
 
-- (void)btn01Clicked:(NSString *)imagePath {
+- (void)btn01Clicked:(NSString *)imagePath completion:(void (^)(NSData *imgData))completion {
+    
+    self.analyzer = [MLImageSegmentationAnalyzer sharedInstance];
+
     _currentImage = [UIImage imageWithContentsOfFile:imagePath];
+    
     if (!_currentImage) {
-        printf("Please select a picture");
+        NSLog(@"Please select a picture");
         return;
     }
-    
+    NSLog(@"_currentImage = %@", _currentImage);
+
+    NSLog(@"imagePath = %@", imagePath);
+
     // Set up the analyzer
     [self setImgSegAnalyzerWithIndex:1];
     
     MLFrame *frame = [[MLFrame alloc] initWithImage:_currentImage];
         
     MLImageSegmentation *imgseg = [self.analyzer analyseFrame:frame];
-//    self.bgImageView.image = [imgseg getForeground];
+    UIImage *bgImage = [imgseg getForeground];
+    NSLog(@"bgImage = %@", bgImage);
+
+//    // Convert UIImage to NSData
+//    NSData *imageData = UIImageJPEGRepresentation(bgImage, 1.0);
+//
+//    // Get the path for tmp directory
+//    NSString *tmpDirectory = NSTemporaryDirectory();
+//    
+//    // Build the complete path for the target file
+//    NSString *filePath = [tmpDirectory stringByAppendingPathComponent:@"savedImage.jpg"];
+//    
+//    // Save NSData to file
+//    if ([imageData writeToFile:filePath atomically:YES]) {
+//        NSLog(@"Image saved successfully at %@", filePath);
+//        if (completion) {
+//            completion(filePath);
+//        }
+//    } else {
+//        NSLog(@"Error saving image to file at %@", filePath);
+//    }
+    //png格式
+
+    NSData *imagedata=UIImagePNGRepresentation(bgImage);
+    NSLog(@"imagedata = %@", imagedata);
+    completion(imagedata);
+    //JEPG格式
+
+    //NSData *imagedata=UIImageJEPGRepresentation(m_imgFore,1.0);
+
+//    NSArray*paths=NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+//
+//    NSString *documentsDirectory=[paths objectAtIndex:0];
+//
+//    NSString *savedImagePath=[documentsDirectory stringByAppendingPathComponent:@"saveFore.png"];
+//
+//    [imagedata writeToFile:savedImagePath atomically:YES];
+//    NSLog(@"savedImagePath %@", savedImagePath);
+
+    //或者
+
+//    [fileManager createFileAtPath:[filePath stringByAppendingString:@"/image.png"] contents:data attributes:nil];   // 将图片保存为PNG格式
+//
+//     [fileManager createFileAtPath:[filePath stringByAppendingString:@"/image.jpg"] contents:data attributes:nil];  // 将图片保存为JPEG格式
 }
+
 
 #pragma mark - UIImagePickerControllerDelegate
 

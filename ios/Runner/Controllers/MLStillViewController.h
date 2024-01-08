@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MLStillViewController : UIViewController
 
-- (void)btn01Clicked:(NSString *)imagePath;
+- (void)btn01Clicked:(NSString *)imagePath completion:(void (^)(NSData *imgData))completion;
 
 @end
 

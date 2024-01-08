@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>We need to save images to the Documents folder.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>允许证件助手访问您的本地文件，用于储存图片</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>允许证件助手访访问您的相册，用于给您生成证件照。</string>
 	<key>NSCameraUsageDescription</key>

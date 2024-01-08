@@ -39,35 +39,64 @@ class ZLXFlutterNativePlugin: NSObject, FlutterPlugin {
                if let arguments = call.arguments as? [String: Any],
                   let imagePath = arguments["imagePath"] as? String {
                    print(imagePath);
+                   self.sendImageToNative(imagePath, result: result);
+               }
+//               result(["result":"success","code":200]);
+           }
+       }
+    }
+    func imgProcesPlugin() {
+        let channel = FlutterMethodChannel(name: "plugin_apple", binaryMessenger: self.messenger!)
+       channel.setMethodCallHandler { (call:FlutterMethodCall, result:@escaping FlutterResult) in
+       
+           if (call.method == "sendImageToNative") {
+               if let arguments = call.arguments as? [String: Any],
+                  let imagePath = arguments["imagePath"] as? String {
+                   print(imagePath);
                }
                result(["result":"success","code":200]);
            }
        }
     }
-    func imgProcesPlugin() {
-        let batteryChannel = FlutterMethodChannel(name: "samples.flutter.dev/battery",
-                                                  binaryMessenger: flutterController!.binaryMessenger)
-        batteryChannel.setMethodCallHandler({
-          [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
-          // This method is invoked on the UI thread.
-          guard call.method == "getBatteryLevel" else {
-            result(FlutterMethodNotImplemented)
-            return
-          }
-          self?.receiveBatteryLevel(result: result)
-        })
+    @objc func sendImageToNative(_ imagePath: String, result: @escaping FlutterResult) {
+//        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+//           let viewController = appDelegate.window?.rootViewController as? MLStillViewController {
+//            viewController.btn01Clicked(imagePath) { filePath in
+//                result(["result": "success", "code": 200, "filePath": filePath])
+//            }
+//        } else {
+//            result(["result": "failure", "code": 400])
+//        }
+        let mlViewController = MLStillViewController()
+        mlViewController.btn01Clicked(imagePath) { imgData in
+            result(["result": "success", "code": 200, "imgData": imgData])
+        }
     }
-    private func receiveBatteryLevel(result: FlutterResult) {
-      let device = UIDevice.current
-      device.isBatteryMonitoringEnabled = true
-      if device.batteryState == UIDevice.BatteryState.unknown {
-        result(FlutterError(code: "UNAVAILABLE",
-                            message: "Battery level not available.",
-                            details: nil))
-      } else {
-        result(Int(device.batteryLevel * 100))
-      }
-    }
+
+//    func imgProcesPlugin() {
+//        let batteryChannel = FlutterMethodChannel(name: "samples.flutter.dev/battery",
+//                                                  binaryMessenger: flutterController!.binaryMessenger)
+//        batteryChannel.setMethodCallHandler({
+//          [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+//          // This method is invoked on the UI thread.
+//          guard call.method == "getBatteryLevel" else {
+//            result(FlutterMethodNotImplemented)
+//            return
+//          }
+//          self?.receiveBatteryLevel(result: result)
+//        })
+//    }
+//    private func receiveBatteryLevel(result: FlutterResult) {
+//      let device = UIDevice.current
+//      device.isBatteryMonitoringEnabled = true
+//      if device.batteryState == UIDevice.BatteryState.unknown {
+//        result(FlutterError(code: "UNAVAILABLE",
+//                            message: "Battery level not available.",
+//                            details: nil))
+//      } else {
+//        result(Int(device.batteryLevel * 100))
+//      }
+//    }
 
 }
 
