@@ -2,6 +2,7 @@ package com.example.flutter_photo_helper
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.os.AsyncTask
 import com.huawei.hms.mlsdk.common.MLFrame
@@ -12,6 +13,7 @@ import com.huawei.hms.mlsdk.imgseg.MLImageSegmentationSetting
 
 import android.util.Base64
 import java.io.ByteArrayOutputStream
+import android.media.ExifInterface
 
 // ImageSegmentationTask.kt
 class ImageSegmentationTask(
@@ -53,12 +55,13 @@ class ImageSegmentationTask(
         task.addOnSuccessListener {
             val mlImageSegmentationResults = it
             val foreground = mlImageSegmentationResults.foreground
+            val rotatedBitmap = rotateImageIfNeeded(imagePath, foreground)
 
             // 将 Bitmap 转换成 Base64 编码的字符串
 //            val base64String = convertBitmapToBase64(foreground)
 // 将 Bitmap 转换成 ByteArray
             val byteArrayOutputStream = ByteArrayOutputStream()
-            foreground.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
             val byteArray = byteArrayOutputStream.toByteArray()
 
             // 将结果传递给 Flutter
@@ -76,6 +79,24 @@ class ImageSegmentationTask(
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+    private fun rotateImageIfNeeded(imagePath: String, bitmap: Bitmap): Bitmap {
+        val exif = ExifInterface(imagePath)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+
+        val rotatedBitmap = when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+            else -> bitmap
+        }
+
+        return rotatedBitmap
+    }
+    private fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 }
 
