@@ -28,10 +28,9 @@ class ZLXFlutterNativePlugin: NSObject, FlutterPlugin {
 //        shared.messenger = registrar.messenger()
         shared.flutterController = (UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController)
         shared.imgProcesPlugin()
-        shared.getBatteryPlugin()
     }
     
-    func getBatteryPlugin() {
+    func imgProcesPlugin() {
         let channel = FlutterMethodChannel(name: "plugin_apple", binaryMessenger: self.messenger!)
        channel.setMethodCallHandler { (call:FlutterMethodCall, result:@escaping FlutterResult) in
        
@@ -45,28 +44,7 @@ class ZLXFlutterNativePlugin: NSObject, FlutterPlugin {
            }
        }
     }
-    func imgProcesPlugin() {
-        let channel = FlutterMethodChannel(name: "plugin_apple", binaryMessenger: self.messenger!)
-       channel.setMethodCallHandler { (call:FlutterMethodCall, result:@escaping FlutterResult) in
-       
-           if (call.method == "sendImageToNative") {
-               if let arguments = call.arguments as? [String: Any],
-                  let imagePath = arguments["imagePath"] as? String {
-                   print(imagePath);
-               }
-               result(["result":"success","code":200]);
-           }
-       }
-    }
     @objc func sendImageToNative(_ imagePath: String, result: @escaping FlutterResult) {
-//        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-//           let viewController = appDelegate.window?.rootViewController as? MLStillViewController {
-//            viewController.btn01Clicked(imagePath) { filePath in
-//                result(["result": "success", "code": 200, "filePath": filePath])
-//            }
-//        } else {
-//            result(["result": "failure", "code": 400])
-//        }
         let mlViewController = MLStillViewController()
         mlViewController.btn01Clicked(imagePath) { imgData in
             result(["result": "success", "code": 200, "imgData": imgData])

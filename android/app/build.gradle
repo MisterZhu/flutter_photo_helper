@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.huawei.agconnect"
 }
 
 def localProperties = new Properties()
@@ -64,4 +65,13 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies{
+    // 引入基础SDK
+    implementation 'com.huawei.hms:ml-computer-vision-segmentation:3.7.0.302'
+    // 引入多类别分割模型包
+    implementation 'com.huawei.hms:ml-computer-vision-image-segmentation-multiclass-model:3.7.0.302'
+    // 引入人像分割模型包
+    implementation 'com.huawei.hms:ml-computer-vision-image-segmentation-body-model:3.7.0.302'
+    //引入头发分割模型包
+    implementation 'com.huawei.hms:ml-computer-vision-image-segmentation-hair-model:3.7.0.302'
+}

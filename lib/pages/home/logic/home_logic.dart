@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,12 +9,14 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../model/home_certifi_model.dart';
+
 class HomeLogic extends GetxController {
   late final ImagePicker _picker = ImagePicker();
   String imageFilePath = '';
   int imageState = 0;
   Color bgColor = Colors.blue;
-  late final Uint8List imageData;
+  late Uint8List imageData;
   bool isShowColors = true;
 
   static const platform = MethodChannel('samples.flutter.dev/battery');
@@ -123,12 +126,15 @@ class HomeLogic extends GetxController {
       "describeText": '规格：102mm × 152mm',
     },
   ];
+  HomeCertifiModel? myCertifiModel;
+
   var selectIndex = 0;
   // 以下为周期函数
   @override
   void onInit() {
     debugPrint('onInit');
     super.onInit();
+    myCertifiModel = HomeCertifiModel.fromJson(listData.first);
   }
 
   void changeShowColorS() {
@@ -198,6 +204,10 @@ class HomeLogic extends GetxController {
     if (permissionStatus == PermissionStatus.granted) {
       debugPrint('可以保存');
       appleOne();
+      // File imageFile = File(imageFilePath);
+      // imageData = await imageFile.readAsBytes();
+      // imageState = 2;
+      // update();
     } else {
       // 处理权限被拒绝的情况
       //  TBLoadingUtils.failure(text: '权限被拒绝，请授予存储权限。');
@@ -213,15 +223,25 @@ class HomeLogic extends GetxController {
           .invokeMethod('sendImageToNative', {'imagePath': imageFilePath});
       Map map = result as LinkedHashMap<Object?, Object?>;
       debugPrint("result: ${map["result"]}");
-      debugPrint("code: ${map["code"]}");
-      // debugPrint("map: $map");
-      // debugPrint("imgData: ${map["imgData"]}");
-      // Check if filePath is not null and its length is greater than 0
-      if (map["imgData"] != null && (map["imgData"] as Uint8List).isNotEmpty) {
-        imageData = map["imgData"] as Uint8List;
-        imageState = 2;
-        update();
+      if (Platform.isAndroid) {
+        debugPrint("------------------------Platform.isAndroid");
+
+        // For Android, decode Base64 string
+        // if (map["imgData"] != null && (map["imgData"] as String).isNotEmpty) {
+        //   imageData =
+        //       Uint8List.fromList(base64.decode(map["imgData"] as String));
+        // }
+        List<int> imageList = map["imgData"];
+        imageData = Uint8List.fromList(imageList);
+      } else if (Platform.isIOS) {
+        debugPrint("------------------------Platform.isIOS");
+        if (map["imgData"] != null &&
+            (map["imgData"] as Uint8List).isNotEmpty) {
+          imageData = map["imgData"] as Uint8List;
+        }
       }
+      imageState = 2;
+      update();
     } catch (e) {
       // Handle errors if any
       debugPrint("Error: $e");

@@ -4,6 +4,7 @@ import 'package:flutter_photo_helper/utils/router/zlx_router_path.dart';
 import 'package:get/get.dart';
 
 import 'logic/home_logic.dart';
+import 'model/home_certifi_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     return InkWell(
       onTap: () {
         logic.selectIndex = index;
+        logic.myCertifiModel = HomeCertifiModel.fromJson(logic.listData[index]);
         ZLXRouterHelper.pathPage(ZLXRouterPath.processPath, null);
       },
       child: Container(

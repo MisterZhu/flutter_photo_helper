@@ -2,8 +2,8 @@ import 'dart:ffi';
 
 class HomeCertifiModel {
   String? title;
-  Int? width;
-  Int? height;
+  int? width;
+  int? height;
   String? describeText;
 
   HomeCertifiModel({this.title, this.width, this.height, this.describeText});
