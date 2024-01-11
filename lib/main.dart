@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'public/zlx_all_binding.dart';
 import 'utils/router/zlx_router_pages.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() {
   /// 路由的basePath
   runApp(const MyApp());
@@ -25,6 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      navigatorKey: navigatorKey,
       getPages: ZLXRouterPages.getPages,
       initialRoute: basePath,
       initialBinding: ZLXAllBinding(),

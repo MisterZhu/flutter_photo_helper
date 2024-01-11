@@ -41,6 +41,7 @@ class ImageSegmentationTask(
     private fun processImageSegmentation(bitmap: Bitmap): String {
         // 配置图像分割检测器
         val setting = MLImageSegmentationSetting.Factory()
+            .setExact(true)
             .setAnalyzerType(MLImageSegmentationSetting.BODY_SEG)
             .create()
         val analyzer = MLAnalyzerFactory.getInstance().getImageSegmentationAnalyzer(setting)

@@ -13,6 +13,7 @@ class ProcessPhotoPage extends StatefulWidget {
 
 class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
   final HomeLogic logic = Get.put(HomeLogic());
+  GlobalKey _globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +113,7 @@ class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
                   label: '保存图片',
                   onTap: () {
                     // 处理保存图片的点击事件
+                    logic.doSaveImage();
                   },
                 ),
               ],
@@ -193,19 +195,22 @@ class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
       padding: const EdgeInsets.only(top: 20, left: 55, right: 55),
       child: Column(
         children: [
-          Container(
-            width: Get.width - 110, // 你指定的宽度
-            height: (Get.width - 110) *
-                ((logic.myCertifiModel?.height ?? 64) /
-                    (logic.myCertifiModel?.width ?? 44)), // 你指定的高度
-            color: logic.bgColor,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                width: Get.width - 110, // 你指定的宽度
-                child: Image.memory(
-                  logic.imageData,
-                  fit: BoxFit.fitWidth, // 使用BoxFit.scaleDown等比例缩放
+          RepaintBoundary(
+            key: _globalKey,
+            child: Container(
+              width: Get.width - 110, // 你指定的宽度
+              height: (Get.width - 110) *
+                  ((logic.myCertifiModel?.height ?? 64) /
+                      (logic.myCertifiModel?.width ?? 44)), // 你指定的高度
+              color: logic.bgColor,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  width: Get.width - 110, // 你指定的宽度
+                  child: Image.memory(
+                    logic.imageData,
+                    fit: BoxFit.fitWidth, // 使用BoxFit.scaleDown等比例缩放
+                  ),
                 ),
               ),
             ),

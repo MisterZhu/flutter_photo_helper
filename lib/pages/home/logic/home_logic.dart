@@ -1,14 +1,21 @@
 import 'dart:collection';
-import 'dart:convert';
+import 'dart:ui' as ui;
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../utils/permission/tb_permission_manager.dart';
 import '../model/home_certifi_model.dart';
 
 class HomeLogic extends GetxController {
@@ -18,6 +25,7 @@ class HomeLogic extends GetxController {
   Color bgColor = Colors.blue;
   late Uint8List imageData;
   bool isShowColors = true;
+  var repaintKey = GlobalKey();
 
   static const platform = MethodChannel('samples.flutter.dev/battery');
   static const platform1 = MethodChannel('plugin_apple');
@@ -157,7 +165,7 @@ class HomeLogic extends GetxController {
       debugPrint('选择的图片路径：${image.path}');
       imageFilePath = image.path;
       imageState = 1;
-      await doSaveImage();
+      await appleOne();
       // _getBatteryLevel();
       // update([TBDefVal.kChatInputFile]);
     } else {
@@ -179,7 +187,7 @@ class HomeLogic extends GetxController {
       imageFilePath = photo.path;
       imageState = 1;
       // _getBatteryLevel();
-      await doSaveImage();
+      await appleOne();
 
       // update([TBDefVal.kChatInputFile]);
     } else {
@@ -192,6 +200,27 @@ class HomeLogic extends GetxController {
 
   /// 执行存储图片到本地相册
   Future<void> doSaveImage() async {
+    // PermissionStatus permissionStatus;
+    //
+    // /// android权限为Permission.storage对应iOS的Permission.photos
+    // if (Platform.isAndroid) {
+    //   permissionStatus = await Permission.storage.request();
+    // } else {
+    //   permissionStatus = await Permission.photos.request();
+    // }
+    //
+    // if (permissionStatus == PermissionStatus.granted) {
+    //   debugPrint('可以保存');
+    //   appleOne();
+    //   // File imageFile = File(imageFilePath);
+    //   // imageData = await imageFile.readAsBytes();
+    //   // imageState = 2;
+    //   // update();
+    // } else {
+    //   // 处理权限被拒绝的情况
+    //   //  TBLoadingUtils.failure(text: '权限被拒绝，请授予存储权限。');
+    //   debugPrint('权限被拒绝，请授予存储权限。');
+    // }
     PermissionStatus permissionStatus;
 
     /// android权限为Permission.storage对应iOS的Permission.photos
@@ -202,20 +231,26 @@ class HomeLogic extends GetxController {
     }
 
     if (permissionStatus == PermissionStatus.granted) {
-      debugPrint('可以保存');
-      appleOne();
-      // File imageFile = File(imageFilePath);
-      // imageData = await imageFile.readAsBytes();
-      // imageState = 2;
-      // update();
+      Uint8List data = await getImageData();
+      String path = await saveImage(data);
+      final result = await ImageGallerySaver.saveFile(path);
+      Fluttertoast.showToast(msg: '保存成功！', gravity: ToastGravity.CENTER);
     } else {
       // 处理权限被拒绝的情况
       //  TBLoadingUtils.failure(text: '权限被拒绝，请授予存储权限。');
-      debugPrint('权限被拒绝，请授予存储权限。');
+      showNoPermissionAlert();
     }
   }
 
   /// 无权限弹窗
+  showNoPermissionAlert() {
+    // 在需要的地方调用requestStoragePermission
+    TBPermissionManager().requestStoragePermission().then((_) {
+      // 申请权限请求成功后的操作
+    }).catchError((error) {
+      // wu权限的操作
+    });
+  }
 
   Future<void> appleOne() async {
     try {
@@ -225,12 +260,6 @@ class HomeLogic extends GetxController {
       debugPrint("result: ${map["result"]}");
       if (Platform.isAndroid) {
         debugPrint("------------------------Platform.isAndroid");
-
-        // For Android, decode Base64 string
-        // if (map["imgData"] != null && (map["imgData"] as String).isNotEmpty) {
-        //   imageData =
-        //       Uint8List.fromList(base64.decode(map["imgData"] as String));
-        // }
         List<int> imageList = map["imgData"];
         imageData = Uint8List.fromList(imageList);
       } else if (Platform.isIOS) {
@@ -256,14 +285,78 @@ class HomeLogic extends GetxController {
     debugPrint("code: ${map["code"]}");
   }
 
-  Future<void> _getBatteryLevel() async {
-    String batteryLevel;
-    try {
-      final int result = await platform.invokeMethod('getBatteryLevel');
-      batteryLevel = 'Battery level at $result % .';
-    } on PlatformException catch (e) {
-      batteryLevel = "Failed to get battery level: '${e.message}'.";
+  /// 获取截取图片的数据
+  Future<Uint8List> getImageData() async {
+    BuildContext buildContext = repaintKey.currentContext!;
+    //用于存储截取的图片数据
+    var imageBytes;
+    //通过 buildContext 获取到 RenderRepaintBoundary 对象，表示要截取的组件边界
+    RenderRepaintBoundary boundary =
+        buildContext.findRenderObject() as RenderRepaintBoundary;
+
+    //这行代码获取设备的像素密度，用于设置截取图片的像素密度
+    double dpr = 3.0;
+    //将边界对象 boundary 转换为图像，使用指定的像素密度。
+    ui.Image image = await boundary.toImage(pixelRatio: dpr);
+    // image.width
+    //将图像转换为ByteData数据，指定了数据格式为 PNG 格式。
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    //将ByteData数据转换为Uint8List 类型的图片数据。
+    imageBytes = byteData!.buffer.asUint8List();
+    return imageBytes;
+  }
+
+  Future<String> saveImage(Uint8List imageByte) async {
+    //将回调拿到的Uint8List格式的图片转换为File格式
+    //获取临时目录
+    if (Platform.isIOS || Platform.isAndroid) {
+      // 在移动平台或桌面平台上运行文件操作代码
+      var tempDir = await getTemporaryDirectory();
+      //生成file文件格式
+      var file =
+          await File('${tempDir.path}/image_${DateTime.now().millisecond}.png')
+              .create();
+
+      //转成file文件
+      file.writeAsBytesSync(imageByte);
+      print("${file.path}");
+      String path = file.path;
+      return path;
+    } else {
+      return '';
     }
-    debugPrint("map: $batteryLevel");
+  }
+
+  void saveImageWith(Uint8List uint8List, String path) {
+    // Resize the image to the desired size (295x413)
+    img.Image? image = img.decodeImage(uint8List);
+    img.Image resizedImage = img.copyResize(image!, width: 295, height: 413);
+    // Save the resized image with the specified DPI
+    File(path).writeAsBytesSync(img.encodePng(resizedImage));
+  }
+
+  Future<String> saveAndModifyImage(Uint8List imageByte) async {
+    // 将Uint8List格式的图片转换为img.Image对象
+    img.Image? originalImage = img.decodeImage(imageByte);
+
+    // 在这里进行像素操作，例如调整图片大小
+    int targetWidth = 295;
+    int targetHeight = 413;
+    img.Image resizedImage = img.copyResize(originalImage!,
+        width: targetWidth, height: targetHeight);
+
+    // 获取临时目录
+    var tempDir = await getTemporaryDirectory();
+
+    // 生成文件路径
+    var filePath =
+        '${tempDir.path}/modified_image_${DateTime.now().millisecond}.png';
+
+    // 将修改后的图片保存到文件
+    File outputFile = File(filePath);
+    outputFile.writeAsBytesSync(img.encodePng(resizedImage));
+
+    // 返回文件路径
+    return filePath;
   }
 }

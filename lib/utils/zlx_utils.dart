@@ -7,9 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../main.dart';
+
 /// 工具类
 
 class ZLXUtils {
+  ///获取当前context
+
+  static getCurrentContext(
+      {Function(BuildContext context)? completionHandler}) {
+    Future.delayed(const Duration(seconds: 0), () async {
+      BuildContext context = navigatorKey.currentState!.overlay!.context;
+      completionHandler?.call(context);
+    });
+  }
+
   /*手机系统是否是中文*/
   static bool isChineseLan() {
     final deviceLocale = Get.deviceLocale;
