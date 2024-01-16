@@ -55,6 +55,8 @@ dependencies:
   fluttertoast: ^8.0.8
   #提供了图像加载、保存和操作各种图像文件格式的能力  https://pub.dev/packages/image/install
   image: ^4.1.3
+  #加载组件 https://pub.flutter-io.cn/packages/flutter_easyloading/install
+  flutter_easyloading: ^3.0.5
 
 dev_dependencies:
   flutter_test:

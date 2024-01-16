@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> {
       onTap: () {
         logic.selectIndex = index;
         logic.myCertifiModel = HomeCertifiModel.fromJson(logic.listData[index]);
+
+        logic.myCertifiModel = HomeCertifiModel.fromJson(logic.listData[index]);
         ZLXRouterHelper.pathPage(ZLXRouterPath.processPath, null);
       },
       child: Container(

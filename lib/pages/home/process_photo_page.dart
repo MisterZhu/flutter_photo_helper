@@ -13,7 +13,7 @@ class ProcessPhotoPage extends StatefulWidget {
 
 class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
   final HomeLogic logic = Get.put(HomeLogic());
-  GlobalKey _globalKey = GlobalKey();
+  // GlobalKey _globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,9 @@ class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text(
-            '一寸照片',
-            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+          title: Text(
+            logic.myCertifiModel?.title ?? '',
+            style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
           ),
         ),
         body: Column(
@@ -32,7 +32,10 @@ class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
           children: [
             _buildContent(),
             // const Spacer(),
-            _bottomContent(),
+            Visibility(
+              visible: logic.imageState == 2,
+              child: _bottomContent(),
+            ),
             _bottomBtnWidget(),
           ],
         ),
@@ -41,8 +44,11 @@ class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
   }
 
   Widget _bottomContent() {
-    return (logic.imageState != 2 && logic.isShowColors)
-        ? Container()
+    return (!logic.isShowColors)
+        ? const SizedBox(
+            height: 110, // 设置为0以隐藏，也可以设置为其他值来调整高度
+            width: double.infinity,
+          )
         : SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Padding(
@@ -196,7 +202,7 @@ class _ProcessPhotoPageState extends State<ProcessPhotoPage> {
       child: Column(
         children: [
           RepaintBoundary(
-            key: _globalKey,
+            key: logic.repaintKey,
             child: Container(
               width: Get.width - 110, // 你指定的宽度
               height: (Get.width - 110) *

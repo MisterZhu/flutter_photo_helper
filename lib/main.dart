@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_photo_helper/pages/home/home_page.dart';
 import 'package:flutter_photo_helper/utils/router/zlx_router_path.dart';
 import 'package:get/get.dart';
@@ -31,6 +32,15 @@ class MyApp extends StatelessWidget {
       getPages: ZLXRouterPages.getPages,
       initialRoute: basePath,
       initialBinding: ZLXAllBinding(),
+      builder: EasyLoading.init(
+        builder: (context, widget) {
+          return MediaQuery(
+            // 设置文字大小不随系统设置改变
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: widget ?? const SizedBox(),
+          );
+        },
+      ),
       // home: const HomePage(),
     );
   }

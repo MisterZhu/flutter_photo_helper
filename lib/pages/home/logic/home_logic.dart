@@ -2,11 +2,12 @@ import 'dart:collection';
 import 'dart:ui' as ui;
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:image/image.dart' as img;
 
+import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_photo_helper/utils/loading/zlx_easy_loading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -165,12 +166,13 @@ class HomeLogic extends GetxController {
       debugPrint('选择的图片路径：${image.path}');
       imageFilePath = image.path;
       imageState = 1;
+      update();
       await appleOne();
       // _getBatteryLevel();
       // update([TBDefVal.kChatInputFile]);
     } else {
       imageState = 0;
-
+      update();
       debugPrint('没有选择图片。');
     }
     update();
@@ -186,13 +188,14 @@ class HomeLogic extends GetxController {
       debugPrint('拍摄的照片路径：${photo.path}');
       imageFilePath = photo.path;
       imageState = 1;
+      update();
       // _getBatteryLevel();
       await appleOne();
 
       // update([TBDefVal.kChatInputFile]);
     } else {
       imageState = 0;
-
+      update();
       debugPrint('没有拍摄照片。');
     }
     update();
@@ -200,28 +203,8 @@ class HomeLogic extends GetxController {
 
   /// 执行存储图片到本地相册
   Future<void> doSaveImage() async {
-    // PermissionStatus permissionStatus;
-    //
-    // /// android权限为Permission.storage对应iOS的Permission.photos
-    // if (Platform.isAndroid) {
-    //   permissionStatus = await Permission.storage.request();
-    // } else {
-    //   permissionStatus = await Permission.photos.request();
-    // }
-    //
-    // if (permissionStatus == PermissionStatus.granted) {
-    //   debugPrint('可以保存');
-    //   appleOne();
-    //   // File imageFile = File(imageFilePath);
-    //   // imageData = await imageFile.readAsBytes();
-    //   // imageState = 2;
-    //   // update();
-    // } else {
-    //   // 处理权限被拒绝的情况
-    //   //  TBLoadingUtils.failure(text: '权限被拒绝，请授予存储权限。');
-    //   debugPrint('权限被拒绝，请授予存储权限。');
-    // }
     PermissionStatus permissionStatus;
+    ZLXEasyLoading.show();
 
     /// android权限为Permission.storage对应iOS的Permission.photos
     if (Platform.isAndroid) {
@@ -234,10 +217,14 @@ class HomeLogic extends GetxController {
       Uint8List data = await getImageData();
       String path = await saveImage(data);
       final result = await ImageGallerySaver.saveFile(path);
+      ZLXEasyLoading.hide();
+
       Fluttertoast.showToast(msg: '保存成功！', gravity: ToastGravity.CENTER);
     } else {
       // 处理权限被拒绝的情况
       //  TBLoadingUtils.failure(text: '权限被拒绝，请授予存储权限。');
+      ZLXEasyLoading.hide();
+
       showNoPermissionAlert();
     }
   }
@@ -262,27 +249,21 @@ class HomeLogic extends GetxController {
         debugPrint("------------------------Platform.isAndroid");
         List<int> imageList = map["imgData"];
         imageData = Uint8List.fromList(imageList);
+        imageState = 2;
+        update();
       } else if (Platform.isIOS) {
         debugPrint("------------------------Platform.isIOS");
         if (map["imgData"] != null &&
             (map["imgData"] as Uint8List).isNotEmpty) {
           imageData = map["imgData"] as Uint8List;
         }
+        imageState = 2;
+        update();
       }
-      imageState = 2;
-      update();
     } catch (e) {
       // Handle errors if any
       debugPrint("Error: $e");
     }
-  }
-
-  Future<void> appleTwo() async {
-    final result = await platform1
-        .invokeMethod('sendImageDataToNative', {'imagePath': imageFilePath});
-    Map map = result as LinkedHashMap<Object?, Object?>;
-    debugPrint("result: ${map["result"]}");
-    debugPrint("code: ${map["code"]}");
   }
 
   /// 获取截取图片的数据
@@ -316,7 +297,6 @@ class HomeLogic extends GetxController {
       var file =
           await File('${tempDir.path}/image_${DateTime.now().millisecond}.png')
               .create();
-
       //转成file文件
       file.writeAsBytesSync(imageByte);
       print("${file.path}");
@@ -325,38 +305,5 @@ class HomeLogic extends GetxController {
     } else {
       return '';
     }
-  }
-
-  void saveImageWith(Uint8List uint8List, String path) {
-    // Resize the image to the desired size (295x413)
-    img.Image? image = img.decodeImage(uint8List);
-    img.Image resizedImage = img.copyResize(image!, width: 295, height: 413);
-    // Save the resized image with the specified DPI
-    File(path).writeAsBytesSync(img.encodePng(resizedImage));
-  }
-
-  Future<String> saveAndModifyImage(Uint8List imageByte) async {
-    // 将Uint8List格式的图片转换为img.Image对象
-    img.Image? originalImage = img.decodeImage(imageByte);
-
-    // 在这里进行像素操作，例如调整图片大小
-    int targetWidth = 295;
-    int targetHeight = 413;
-    img.Image resizedImage = img.copyResize(originalImage!,
-        width: targetWidth, height: targetHeight);
-
-    // 获取临时目录
-    var tempDir = await getTemporaryDirectory();
-
-    // 生成文件路径
-    var filePath =
-        '${tempDir.path}/modified_image_${DateTime.now().millisecond}.png';
-
-    // 将修改后的图片保存到文件
-    File outputFile = File(filePath);
-    outputFile.writeAsBytesSync(img.encodePng(resizedImage));
-
-    // 返回文件路径
-    return filePath;
   }
 }
