@@ -1,3 +1,4 @@
+import 'package:flutter_photo_helper/pages/bluetooth/bluetooth_view.dart';
 import 'package:get/get.dart';
 
 import '../../pages/home/process_photo_page.dart';
@@ -11,6 +12,9 @@ class ZLXRouterPages {
   static final List<GetPage> getPages = [
     /*首页*/
     GetPage(name: ZLXRouterPath.homePath, page: () => const HomePage()),
+    // GetPage(name: ZLXRouterPath.bluetoothPath, page: () => BluetoothPage()),
+    GetPage(name: ZLXRouterPath.bluetoothPath, page: () => const bleScanTest()),
+
     GetPage(
         name: ZLXRouterPath.processPath, page: () => const ProcessPhotoPage()),
   ];

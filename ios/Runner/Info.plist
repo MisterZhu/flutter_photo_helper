@@ -2,14 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSDocumentsFolderUsageDescription</key>
-    <string>We need to save images to the Documents folder.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>允许证件助手访问您的本地文件，用于储存图片</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>允许证件助手访访问您的相册，用于给您生成证件照。</string>
-	<key>NSCameraUsageDescription</key>
-	<string>允许证件助手访问您的相机来拍摄照片用于生成证件照</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -32,6 +26,24 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>允许证件助手访问您的相机来拍摄照片用于生成证件照</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>We need to save images to the Documents folder.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>允许证件助手访问您的本地文件，用于储存图片</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>允许证件助手访访问您的相册，用于给您生成证件照。</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>App需要您的同意,才能访问蓝牙,进行设备连接,数据通讯服务</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>App需要您的同意,才能访问蓝牙,进行设备连接,数据通讯服务</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>bluetooth-central</string>
+    </array>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -49,9 +61,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>

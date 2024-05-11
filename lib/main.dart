@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    String basePath = ZLXRouterPath.homePath;
+    String basePath = ZLXRouterPath.bluetoothPath;
 
     return GetMaterialApp(
       title: 'demo',

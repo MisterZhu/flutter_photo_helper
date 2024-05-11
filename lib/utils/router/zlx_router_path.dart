@@ -8,6 +8,9 @@ class ZLXRouterPath {
   /// 首页
   static String homePath = "/lib/pages/home/home_page";
 
+  /// 蓝牙
+  static String bluetoothPath = "/lib/pages/bluetooth/bluetooth_view";
+
   /// 制作照片页
   static String processPath = "/lib/pages/home/process_photo_page";
 }
